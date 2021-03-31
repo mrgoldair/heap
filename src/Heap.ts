@@ -1,35 +1,39 @@
 class Node<T,U> {
   
-  value: T;
+  key: T;
   priority: U;
 
-  constructor(value: T, priority: U){
+  constructor(key: T, priority: U){
     this.priority = priority;
-    this.value = value;
+    this.key = key;
   }
 }
 
 export class Heap<T> {
 
-  heap: Array<Node<T,Number>>;
+  heap: Array<Node<T,number>>;
   branchFactor: number;
 
   constructor(branchFactor:number = 4) {
     this.branchFactor = branchFactor;
-    this.heap = new Array<Node<T,Number>>();
+    this.heap = new Array<Node<T,number>>();
+  }
+
+  get length() {
+    return this.heap.length;
   }
 
   highestPriorityChildIndex(root: number): number | null {
     
     // calculate where the children nodes start
     let currentIndex:number = (root * this.branchFactor) + 1;
-    let current:Node<T,Number> = this.heap[currentIndex];
+    let current:Node<T,number> = this.heap[currentIndex];
 
     if (current == null) return null;
 
     for(let index:number = ((root * this.branchFactor) + 2); index <= ((root * this.branchFactor) + this.branchFactor); index++){
       // get our next child
-      let candidate:Node<T,Number> = this.heap[index];
+      let candidate:Node<T,number> = this.heap[index];
 
       // our current node is the last child
       if(candidate == null) return currentIndex;
@@ -60,7 +64,7 @@ export class Heap<T> {
   pushDown(index:number): void {
 
     let currentIndex:number = index;
-    let node:Node<T,Number> = this.heap[index];
+    let node:Node<T,number> = this.heap[index];
     let firstLeafIndex:number = this.firstLeafIndex();
 
     while(currentIndex < firstLeafIndex){
@@ -88,7 +92,7 @@ export class Heap<T> {
   bubbleUp(index:number): void {
     
     // The node we're bubbling up from tail position
-    let current:Node<T,Number> = this.heap[index];
+    let current:Node<T,number> = this.heap[index];
     // The index under inspection as we travel up the heap
     let currentIndex:number = index;
 
@@ -97,7 +101,7 @@ export class Heap<T> {
     // b) we've stabilised the heap's invariants
     while (currentIndex > 0){
       let parentIndex: number = this.parentIndex(currentIndex);
-      let parent:Node<T,Number> = this.heap[parentIndex];
+      let parent:Node<T,number> = this.heap[parentIndex];
 
       if(current.priority < parent.priority){
         // Swap the parent with current node
@@ -159,7 +163,7 @@ export class Heap<T> {
     if ( this.search(value) ) return this.update(value, priority);
 
     // create our new heap node
-    let node:Node<T,Number> = new Node<T,Number>(value, priority);
+    let node:Node<T,number> = new Node<T,number>(key, priority);
 
     // node goes to the end of the heap
     this.heap.push(node)
