@@ -1,45 +1,30 @@
 import * as fc from 'fast-check';
 import { Heap } from '../src/Heap';
 
-test('Every sub-root is less than its parent', () => {
-	
-	fc.assert(
-		fc.property(fc.array(fc.tuple(fc.string(6), fc.nat())), (a:[string, number][]) => {
-			let queue:Heap<String> = new Heap();
-			let heap = queue.heap;
+// test('Sample', () => {
+// 	console.log(fc.sample(fc.array(fc.tuple(fc.string(), fc.nat()), { minLength:1 } ), 3))
+// })
 
-			for (let index = 0; index < a.length; index++) {
-				const [ val, priority ] = a[index];
-				queue.insert(val, priority);
+test('Heap(min) returns items in priority order', () => {
+	fc.assert(
+		fc.property(fc.array(fc.tuple(fc.string({minLength:4}), fc.nat()), { minLength:5 }), inputs => {
+			let queue:Heap<string> = new Heap();
+
+			for (let index = 0; index < inputs.length; index++) {
+				const [ key,priority ] = inputs[index];
+				queue.insert( key,priority );
 			}
 
-			return heap.every((node, index) => {
+			let results = [];
+			while( queue.peek() != null ){
+				results.push(queue.top());
+			}
 
-				// the root of our tree (index 0) has no parent
-				let parentIndex: number | null = queue.parentIndex(index);
-
-				if (parentIndex){
-					let parent = heap[parentIndex];
-					return node.priority > parent.priority;
-				} else {
-					return true;
-				}
-			});
-		}),
-		{verbose: true}
-	);
-});
-
-test('parentIndex always returns positive integers', () => {
-
-	fc.assert(
-		fc.property(fc.nat(), (index) => {
-			let heap:Heap<String> = new Heap();
-
-			let parentIndex = heap.parentIndex(index);
-
-			return parentIndex >= 0 || parentIndex == null;
-		}),
-		{verbose: true}
+			for (let index = 0; index < results.length - 1; index++) {
+				let [ a,p ] = results[index];
+				let [ b,q ] = results[index + 1];
+				expect(p).toBeLessThanOrEqual(q);
+			}
+		})
 	);
 });
