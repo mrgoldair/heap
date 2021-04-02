@@ -56,7 +56,8 @@ export class Heap<T> {
   parentIndex(index:number): number | null {
 
     // 0 is the root of the tree and by definition, has no parent
-    if (index == 0) return null;
+    if ( index == 0 )
+      return null;
 
     return Math.round(Math.floor((index - 1) / this.branchFactor));
   }
@@ -75,12 +76,12 @@ export class Heap<T> {
 
       let highestPriorityChild = this.heap[highestPriorityChildIndex];
 
-      // if our node is of lesser priority (higher value in min heap), then swap it
+      // if our node is of lesser priority (higher key in min heap), then swap it
       if(node.priority > highestPriorityChild.priority) {
         this.heap[currentIndex] = highestPriorityChild;
         currentIndex = highestPriorityChildIndex;
       } else {
-        // our node is of higher priority (lesser value); heap invariants are satisfied
+        // our node is of higher priority (lesser key); heap invariants are satisfied
         return;
       }
     }
@@ -103,7 +104,7 @@ export class Heap<T> {
       let parentIndex: number = this.parentIndex(currentIndex);
       let parent:Node<T,number> = this.heap[parentIndex];
 
-      if(current.priority < parent.priority){
+      if(current.priority <= parent.priority){
         // Swap the parent with current node
         this.heap[currentIndex] = parent;
         // Update the index to compare against
@@ -120,47 +121,59 @@ export class Heap<T> {
     return;
   }
 
-  top(): T | null {
-    // get first (still exists in heap)
-    let item:T;
+  top(): [ T,number ] {
+    
+    let item:[ T,number ];
 
-    if(this.heap.length) {
-      item = this.heap[0].value;
+    if ( this.heap.length > 0 ){
+      let node:Node<T,number> = this.heap[0];
+      item = [ node.key, node.priority ];
     } else {
       return null;
     }
 
-    // place last element, first
-    this.heap[0] = this.heap[this.heap.length - 1];
 
-    // remove the (now duplicate) last element
-    this.heap = this.heap.slice(0, this.heap.length - 1);
+      // copy last element to first index
+      this.heap[0] = this.heap[this.length - 1];
 
-    // push down root to reinstate heap invariants
-    this.pushDown(0);
+      // remove the (now duplicate) last element
+      this.heap = this.heap.slice(0, this.length - 1);
+
+      // push down root to reinstate heap invariants
+      this.pushDown(0);
+
 
     // return our min/max item
     return item;
   }
 
-  peek(): T {
+  peek(): T | null {
     // does not affect the heap
-    return this.heap[0].value;
+    if( this.heap[0] ) {
+      return this.heap[0].key;
+    } else {
+      return null;
+    }
   }
 
-  search(value:T): number {
+  search(key:T): number {
 
     for (let index = 0; index < this.heap.length; index++) {
-      if ( value == this.heap[index].value ) return index;
+      if( key == this.heap[index].key )
+        return index;
     }
 
     return -1;
   }
 
-  insert(value:T, priority:number): void {
+  insert(key:T, priority:number): boolean {
 
-    // if the value exists, update the node (val and priority)
-    if ( this.search(value) ) return this.update(value, priority);
+    if( key.toString().trim().length == 0 )
+      throw new Error("Key cannot be empty");
+      
+    // if the key exists
+    if( this.search(key) != -1 )
+      return false;
 
     // create our new heap node
     let node:Node<T,number> = new Node<T,number>(key, priority);
@@ -172,9 +185,9 @@ export class Heap<T> {
     this.bubbleUp(this.heap.length - 1);
   }
 
-  remove(value:T): void {
+  remove(key:T): void {
 
-    let index:number = this.search(value);
+    let index:number = this.search(key);
 
     // if it's not found, return
     if(!index) return;
@@ -196,15 +209,15 @@ export class Heap<T> {
     this.pushDown(index);
   }
 
-  update(value:T, priority:number, index?:number): void {
+  update(key:T, priority:number, index?:number): void {
 
-    // index may be passed in to update an already found value
+    // index may be passed in to update an already found key
     if ( index == null )
-      index = this.search(value);
+      index = this.search(key);
 
-    // if the index, and therefore value, exists, update it
+    // if the index, and therefore key, exists, update it
     if ( index ) {
-      this.heap[index].value = value;
+      this.heap[index].key = key;
 
       // set new priority and reinstate heapd invariants
       if ( this.heap[index].priority == priority ) {
