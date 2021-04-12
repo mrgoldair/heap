@@ -184,7 +184,7 @@ export class Heap<T> {
       return false;
 
     // create our new heap node
-    let node:Node<T,number> = new Node<T,number>(item, priority);
+    let node = new Node<T,number>(item, priority);
 
     // node goes to the end of the heap
     this.heap.push(node)
