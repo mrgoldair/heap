@@ -7,6 +7,12 @@ class Node<T,U> {
     this.priority = priority;
     this.value = value;
   }
+
+  // returns a tuple of our values
+  * [Symbol.iterator](){
+    yield this.value;
+    yield this.priority;
+  }
 }
 
 export class Heap<T> {
@@ -25,14 +31,18 @@ export class Heap<T> {
     let currentIndex:number = (root * this.branchFactor) + 1;
     let current:Node<T,Number> = this.heap[currentIndex];
 
-    if (current == null) return null;
+    if (current == null)
+      return null;
 
-    for(let index:number = ((root * this.branchFactor) + 2); index <= ((root * this.branchFactor) + this.branchFactor); index++){
+    for(let index:number = ((root * this.branchFactor) + 2);
+        index <= ((root * this.branchFactor) + this.branchFactor);
+        index++){
       // get our next child
       let candidate:Node<T,Number> = this.heap[index];
 
       // our current node is the last child
-      if(candidate == null) return currentIndex;
+      if(candidate == null)
+        return currentIndex;
 
       if(candidate.priority < current.priority){
         currentIndex = index;
@@ -52,7 +62,8 @@ export class Heap<T> {
   parentIndex(index:number): number | null {
 
     // 0 is the root of the tree and by definition, has no parent
-    if (index == 0) return null;
+    if (index == 0)
+      return null;
 
     return Math.round(Math.floor((index - 1) / this.branchFactor));
   }
@@ -120,7 +131,7 @@ export class Heap<T> {
     // get first (still exists in heap)
     let item:T;
 
-    if(this.heap.length) {
+    if ( this.heap.length ) {
       item = this.heap[0].value;
     } else {
       return null;
@@ -144,19 +155,20 @@ export class Heap<T> {
     return this.heap[0].value;
   }
 
-  search(value:T): number {
+  search(value:T): number | false {
 
     for (let index = 0; index < this.heap.length; index++) {
       if ( value == this.heap[index].value ) return index;
     }
 
-    return -1;
+    return false;
   }
 
   insert(value:T, priority:number): void {
 
     // if the value exists, update the node (val and priority)
-    if ( this.search(value) ) return this.update(value, priority);
+    if ( this.search(value) )
+      return this.update(value, priority);
 
     // create our new heap node
     let node:Node<T,Number> = new Node<T,Number>(value, priority);
@@ -170,10 +182,11 @@ export class Heap<T> {
 
   remove(value:T): void {
 
-    let index:number = this.search(value);
+    let index:number | boolean = this.search(value);
 
     // if it's not found, return
-    if(!index) return;
+    if(!index)
+      return;
 
     // if our item also happens to be the last in the heap
     // the usual processing (popping and assigning) essentially replace it with itself.
@@ -194,12 +207,14 @@ export class Heap<T> {
 
   update(value:T, priority:number, index?:number): void {
 
+    let result:number | boolean;
+
     // index may be passed in to update an already found value
     if ( index == null )
-      index = this.search(value);
+      result = this.search(value);
 
     // if the index, and therefore value, exists, update it
-    if ( index ) {
+    if ( result && typeof result == "number" ) {
       this.heap[index].value = value;
 
       // set new priority and reinstate heapd invariants
