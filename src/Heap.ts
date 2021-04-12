@@ -180,7 +180,7 @@ export class Heap<T> {
       throw new Error("item cannot be empty");
       
     // if the item exists
-    if( this.search(item) != -1 )
+    if( !this.search(item) )
       return false;
 
     // create our new heap node
