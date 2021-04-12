@@ -59,7 +59,7 @@ export class Heap<T> {
 
   // this is tree (not heap) specific so could perhaps be imported from such a module
   firstLeafIndex(): number {
-    return Math.round(this.heap.length / 4);
+    return Math.round(this.heap.length / this.branchFactor);
   }
 
   // same here...
