@@ -2,6 +2,9 @@
   "name": "@mrgoldair/heap",
   "version": "0.1.0",
   "main": "index.js",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "test": "jest"
   },
@@ -13,7 +16,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfig": "tsconfig.json"
+        "tsconfig": "tsconfig.json"
       }
     },
     "transform": {
@@ -31,8 +34,8 @@
     "typescript": "^3.9.6"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.4",
-    "fast-check": "^1.26.0",
+    "@types/jest": "26.0.4",
+    "fast-check": "^2.14.0",
     "jest": "^26.1.0",
     "ts-jest": "^26.1.2"
   }
