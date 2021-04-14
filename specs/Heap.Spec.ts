@@ -2,29 +2,56 @@ import * as fc from 'fast-check';
 import { Heap } from '../src/Heap';
 
 // test('Sample', () => {
-// 	console.log(fc.sample(fc.array(fc.tuple(fc.string(), fc.nat()), { minLength:1 } ), 3))
+// 	console.log(fc.sample(fc.array(
+//     fc.record({
+//       start: fc.record({ x:fc.nat(),y:fc.nat() }),
+//       end: fc.record({ x:fc.nat(),y:fc.nat() })
+//   }),{ minLength:1 } ), 3))
 // })
 
+type Point = {
+  x:number,
+  y:number
+}
+
+type Segment = {
+  start:Point
+  end:Point
+}
+
+function compareSegments(a:Segment,b:Segment) {
+  let r:number = a.start.y - b.start.y
+    
+  if ( r == 0 ){
+    return a.start.x - b.start.x;
+  } else {
+    return r;
+  }
+}
+
 test('Heap(min) returns items in priority order', () => {
-	fc.assert(
-		fc.property(fc.array(fc.tuple(fc.string({minLength:4}), fc.nat()), { minLength:5 }), inputs => {
-			let queue:Heap<string> = new Heap();
+  fc.assert(
 
-			for (let index = 0; index < inputs.length; index++) {
-				const [ key,priority ] = inputs[index];
-				queue.insert( key,priority );
-			}
+    fc.property(fc.array(fc.record({
+      start: fc.record({ x:fc.nat(),y:fc.nat() }),
+      end: fc.record({ x:fc.nat(),y:fc.nat() })
+    })), inputs => {
+      let queue:Heap<Segment> = new Heap(compareSegments);
 
-			let results = [];
-			while( queue.peek() != null ){
-				results.push(queue.top());
-			}
+      for (let index = 0; index < inputs.length; index++) {
+        queue.insert( inputs[index] );
+      }
 
-			for (let index = 0; index < results.length - 1; index++) {
-				let [ a,p ] = results[index];
-				let [ b,q ] = results[index + 1];
-				expect(p).toBeLessThanOrEqual(q);
-			}
-		})
-	);
+      let results = [];
+      while( queue.peek() != null ){
+        results.push(queue.top());
+      }
+
+      for (let index = 0; index < results.length - 1; index++) {
+        let a = results[index];
+        let b = results[index + 1];
+        expect(a).toBeLessThanOrEqual(b);
+      }
+    })
+  );
 });

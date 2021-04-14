@@ -1,39 +1,43 @@
-class Node<T,U> {
-  
-  item: T;
-  priority: U;
-
-  constructor(item: T, priority: U){
-    this.priority = priority;
-    this.item = item;
-  }
-
-  // returns a tuple of our values
-  * [Symbol.iterator](){
-    yield this.item;
-    yield this.priority;
-  }
-}
 
 export class Heap<T> {
 
-  heap: Array<Node<T,number>>;
+  heap: Array<T>;
   branchFactor: number;
+  compare: (a:T,b:T) => number;
 
-  constructor(branchFactor:number = 4) {
+  constructor(compare?:(a:T,b:T) => number, branchFactor:number = 4) {
     this.branchFactor = branchFactor;
-    this.heap = new Array<Node<T,number>>();
+    this.heap = new Array<T>();
+    this.compare = compare;
   }
 
   get length() {
     return this.heap.length;
   }
 
+  // In terms of `a` – is `a` higher priority than `b`
+  isHigherPriority(a:T,b:T): boolean {
+
+    // If the heap is just numbers we can determine priority easily
+    if (typeof a == "number" && typeof b == "number"){
+      return a < b;
+    }
+
+    // Otherwise we have to use the comparator fn to determine priority
+    if (this.compare == null)
+      throw new Error("Non number types must be used with a custom comparator");
+
+    // Unless we're strictly a lower number (-1), then we're not higher priority
+    // Conversely, if we're equal to or higher then (0,1), we're lower priority
+    let result = this.compare(a,b) == -1 ? true : false;
+    return result;
+  }
+
   highestPriorityChildIndex(root: number): number | null {
-    
+
     // calculate where the children nodes start
     let currentIndex:number = (root * this.branchFactor) + 1;
-    let current:Node<T,number> = this.heap[currentIndex];
+    let current:T = this.heap[currentIndex];
 
     if (current == null)
       return null;
@@ -42,13 +46,13 @@ export class Heap<T> {
         index <= ((root * this.branchFactor) + this.branchFactor);
         index++){
       // get our next child
-      let candidate:Node<T,number> = this.heap[index];
+      let candidate:T = this.heap[index];
 
       // our current node is the last child
       if(candidate == null)
         return currentIndex;
 
-      if(candidate.priority < current.priority){
+      if( this.isHigherPriority( candidate,current ) ){
         currentIndex = index;
         current = candidate;
       }
@@ -75,7 +79,7 @@ export class Heap<T> {
   pushDown(index:number): void {
 
     let currentIndex:number = index;
-    let node:Node<T,number> = this.heap[index];
+    let node:T = this.heap[index];
     let firstLeafIndex:number = this.firstLeafIndex();
 
     while(currentIndex < firstLeafIndex){
@@ -86,12 +90,12 @@ export class Heap<T> {
 
       let highestPriorityChild = this.heap[highestPriorityChildIndex];
 
-      // if our node is of lesser priority (higher item in min heap), then swap it
-      if(node.priority > highestPriorityChild.priority) {
+      // if our node is of lesser priority (higher ordinal value in a min heap), then swap it
+      if( !this.isHigherPriority(node,highestPriorityChild) ) {
         this.heap[currentIndex] = highestPriorityChild;
         currentIndex = highestPriorityChildIndex;
       } else {
-        // our node is of higher priority (lesser item); heap invariants are satisfied
+        // our node is of higher priority (lower ordinal value); heap invariants are satisfied
         return;
       }
     }
@@ -101,9 +105,9 @@ export class Heap<T> {
   }
 
   bubbleUp(index:number): void {
-    
+
     // The node we're bubbling up from tail position
-    let current:Node<T,number> = this.heap[index];
+    let current:T = this.heap[index];
     // The index under inspection as we travel up the heap
     let currentIndex:number = index;
 
@@ -111,10 +115,10 @@ export class Heap<T> {
     // a) we're at the root or
     // b) we've stabilised the heap's invariants
     while (currentIndex > 0){
-      let parentIndex: number = this.parentIndex(currentIndex);
-      let parent:Node<T,number> = this.heap[parentIndex];
+      let parentIndex:number = this.parentIndex(currentIndex);
+      let parent:T = this.heap[parentIndex];
 
-      if(current.priority <= parent.priority){
+      if ( this.isHigherPriority(current,parent) ){
         // Swap the parent with current node
         this.heap[currentIndex] = parent;
         // Update the index to compare against
@@ -136,8 +140,7 @@ export class Heap<T> {
     let item:T;
 
     if ( this.heap.length > 0 ){
-      let node = this.heap[0];
-      item = node.item;
+      item = this.heap[0];
     } else {
       return null;
     }
@@ -158,7 +161,7 @@ export class Heap<T> {
   peek(): T | null {
     // does not affect the heap
     if( this.heap[0] ) {
-      return this.heap[0].item;
+      return this.heap[0];
     } else {
       return null;
     }
@@ -167,14 +170,14 @@ export class Heap<T> {
   search(item:T): number | boolean {
 
     for (let index = 0; index < this.heap.length; index++) {
-      if( item == this.heap[index].item )
+      if( item == this.heap[index] )
         return index;
     }
 
     return false;
   }
 
-  insert(item:T, priority:number): boolean {
+  insert(item:T): boolean {
 
     if( item.toString().trim().length == 0 )
       throw new Error("item cannot be empty");
@@ -183,14 +186,13 @@ export class Heap<T> {
     if( !this.search(item) )
       return false;
 
-    // create our new heap node
-    let node = new Node<T,number>(item, priority);
-
     // node goes to the end of the heap
-    this.heap.push(node)
+    this.heap.push(item)
 
     // move new node into the correct position, reinstating heap invariants
     this.bubbleUp(this.heap.length - 1);
+
+    return true;
   }
 
   remove(item:T): void {
@@ -217,35 +219,6 @@ export class Heap<T> {
 
       // reinstate heap invariants
       this.pushDown(index);
-    }
-  }
-
-  update(item:T, priority:number, index?:number): void {
-
-    let result:number | boolean;
-
-    // index may be passed in to update an already found item
-    if ( index == null )
-      result = this.search(item);
-
-    // if the index, and therefore item, exists, update it
-    if ( typeof result == "number" ) {
-
-      // result is an index, so set the index
-      index = result;
-
-      this.heap[index].item = item;
-
-      // set new priority and reinstate heapd invariants
-      if ( this.heap[index].priority == priority ) {
-        return;
-      } else if ( this.heap[index].priority > priority ) {
-        this.heap[index].priority = priority;
-        this.pushDown(index);
-      } else {
-        this.heap[index].priority = priority;
-        this.bubbleUp(index);
-      }
     }
   }
 }
