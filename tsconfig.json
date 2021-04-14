@@ -1,8 +1,10 @@
 {
-	"compilerOptions": {
-		"target": "ES6",
-		"module": "commonjs",
-		"sourceMap": true,
-		"outDir": "out"
-	}
+  "compilerOptions": {
+    "target": "ES6",
+    "outDir": "dist",
+    "skipLibCheck": true
+  },
+  "files": [
+    "src/Heap.ts"
+  ]
 }
