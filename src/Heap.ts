@@ -29,7 +29,7 @@ export class Heap<T> {
 
     // Unless we're strictly a lower number (-1), then we're not higher priority
     // Conversely, if we're equal to or higher then (0,1), we're lower priority
-    let result = this.compare(a,b) == -1 ? true : false;
+    let result = this.compare(a,b) < 0 ? true : false;
     return result;
   }
 
@@ -182,8 +182,8 @@ export class Heap<T> {
     if( item.toString().trim().length == 0 )
       throw new Error("item cannot be empty");
       
-    // if the item exists
-    if( !this.search(item) )
+    // Disallow duplicates
+    if( this.search(item) )
       return false;
 
     // node goes to the end of the heap

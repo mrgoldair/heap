@@ -50,7 +50,7 @@ test('Heap(min) returns items in priority order', () => {
       for (let index = 0; index < results.length - 1; index++) {
         let a = results[index];
         let b = results[index + 1];
-        expect(a).toBeLessThanOrEqual(b);
+        expect(a.start.y).toBeLessThanOrEqual(b.start.y);
       }
     })
   );
