@@ -7,7 +7,7 @@ export class Heap {
     get length() {
         return this.heap.length;
     }
-    // In terms of `a` – is `a` higher priority than `b`
+    // Is `a` higher priority than `b`
     isHigherPriority(a, b) {
         // If the heap is just numbers we can determine priority easily
         if (typeof a == "number" && typeof b == "number") {
@@ -16,9 +16,9 @@ export class Heap {
         // Otherwise we have to use the comparator fn to determine priority
         if (this.compare == null)
             throw new Error("Non number types must be used with a custom comparator");
-        // Unless we're strictly a lower number (-1), then we're not higher priority
+        // Unless we're strictly a lower number (< 0), then we're not higher priority
         // Conversely, if we're equal to or higher then (0,1), we're lower priority
-        let result = this.compare(a, b) == -1 ? true : false;
+        let result = this.compare(a, b) < 0 ? true : false;
         return result;
     }
     highestPriorityChildIndex(root) {
@@ -136,8 +136,8 @@ export class Heap {
     insert(item) {
         if (item.toString().trim().length == 0)
             throw new Error("item cannot be empty");
-        // if the item exists
-        if (!this.search(item))
+        // Disallow duplicates
+        if (this.search(item))
             return false;
         // node goes to the end of the heap
         this.heap.push(item);
