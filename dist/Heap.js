@@ -52,6 +52,9 @@ export class Heap {
         return Math.round(Math.floor((index - 1) / this.branchFactor));
     }
     pushDown(index) {
+        // Only makes sense when there's multiple items to compare
+        if (this.heap.length < 2)
+            return;
         let currentIndex = index;
         let node = this.heap[index];
         let firstLeafIndex = this.firstLeafIndex();
