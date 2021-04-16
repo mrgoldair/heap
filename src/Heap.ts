@@ -78,6 +78,10 @@ export class Heap<T> {
 
   pushDown(index:number): void {
 
+    // Only makes sense when there's multiple items to compare
+    if ( this.heap.length < 2 )
+      return
+    
     let currentIndex:number = index;
     let node:T = this.heap[index];
     let firstLeafIndex:number = this.firstLeafIndex();

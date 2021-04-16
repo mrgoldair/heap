@@ -29,7 +29,30 @@ function compareSegments(a:Segment,b:Segment) {
   }
 }
 
-test('Heap(min) returns items in priority order', () => {
+test('Heap (min numbers) returns items in priority order', () => {
+  fc.assert(
+
+    fc.property(fc.array(fc.nat()), inputs => {
+      let queue:Heap<number> = new Heap();
+
+      for (let index = 0; index < inputs.length; index++) {
+        queue.insert( inputs[index] );
+      }
+
+      let results = [];
+      while( queue.peek() != undefined ){
+        results.push(queue.top());
+      }
+
+      for (let index = 0; index < results.length - 1; index++) {
+        let a = results[index];
+        expect(a).not.toBe(undefined);
+      }
+    })
+  );
+});
+
+test('Heap (min segments) returns items in priority order', () => {
   fc.assert(
 
     fc.property(fc.array(fc.record({
