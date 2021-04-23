@@ -45,7 +45,8 @@ test('Heap (number) returns items in priority order', () => {
 
       for (let index = 0; index < results.length - 1; index++) {
         let a = results[index];
-        expect(a).toEqual(a);
+        let b = results[index + 1];
+        expect(a).toBeLessThanOrEqual(b);
       }
     })
   );

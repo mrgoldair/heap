@@ -164,14 +164,14 @@ export class Heap<T> {
     return this.heap[0];
   }
 
-  search(item:T): number | boolean {
+  search(item:T): number {
 
     for (let index = 0; index < this.heap.length; index++) {
       if( item == this.heap[index] )
         return index;
     }
 
-    return false;
+    return -1;
   }
 
   insert(item:T): boolean {
@@ -180,7 +180,7 @@ export class Heap<T> {
       throw new Error("item cannot be empty");
       
     // Disallow duplicates
-    if( this.search(item) )
+    if( this.search(item) != -1 )
       return false;
 
     // node goes to the end of the heap
