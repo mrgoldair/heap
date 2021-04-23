@@ -33,13 +33,13 @@ export class Heap<T> {
     return result;
   }
 
-  highestPriorityChildIndex(root: number): number | null {
+  highestPriorityChildIndex(root:number): number | null {
 
-    // calculate where the children nodes start
+    // First child index
     let currentIndex:number = (root * this.branchFactor) + 1;
     let current:T = this.heap[currentIndex];
 
-    if (current == null)
+    if ( current == null )
       return null;
 
     for(let index:number = ((root * this.branchFactor) + 2);
@@ -49,10 +49,10 @@ export class Heap<T> {
       let candidate:T = this.heap[index];
 
       // our current node is the last child
-      if(candidate == null)
+      if ( candidate == null )
         return currentIndex;
 
-      if( this.isHigherPriority( candidate,current ) ){
+      if ( this.isHigherPriority( candidate,current ) ){
         currentIndex = index;
         current = candidate;
       }
@@ -61,12 +61,11 @@ export class Heap<T> {
     return currentIndex;
   }
 
-  // this is tree (not heap) specific so could perhaps be imported from such a module
+  // This is tree (not heap) specific so could perhaps be imported from such a module
   firstLeafIndex(): number {
     return Math.round(this.heap.length / this.branchFactor);
   }
 
-  // same here...
   parentIndex(index:number): number | null {
 
     // 0 is the root of the tree and by definition, has no parent
@@ -76,31 +75,29 @@ export class Heap<T> {
     return Math.round(Math.floor((index - 1) / this.branchFactor));
   }
 
-  pushDown(index:number): void {
+  pushDown(index:number = 0): void {
 
     // Only makes sense when there's multiple items to compare
     if ( this.heap.length < 2 )
       return
-    
+
     let currentIndex:number = index;
     let node:T = this.heap[index];
     let firstLeafIndex:number = this.firstLeafIndex();
 
-    while(currentIndex < firstLeafIndex){
+    // By definition we'll should always be traversing nodes that have some children
+    while ( currentIndex < firstLeafIndex ){
 
-      // by definition of our while-loop, we'll should 
-      // always be traversing nodes that have children
-      let highestPriorityChildIndex:number | null = this.highestPriorityChildIndex(currentIndex);
+      let highestPriorityChildIndex = this.highestPriorityChildIndex(currentIndex);
 
       let highestPriorityChild = this.heap[highestPriorityChildIndex];
 
-      // if our node is of lesser priority (higher ordinal value in a min heap), then swap it
-      if( !this.isHigherPriority(node,highestPriorityChild) ) {
+      // If the child is higher priority, swap them
+      if ( this.isHigherPriority( highestPriorityChild,node ) ){
         this.heap[currentIndex] = highestPriorityChild;
         currentIndex = highestPriorityChildIndex;
       } else {
-        // our node is of higher priority (lower ordinal value); heap invariants are satisfied
-        return;
+        break;
       }
     }
 
@@ -139,7 +136,7 @@ export class Heap<T> {
     return;
   }
 
-  top(): T {
+  top(): T | null {
     
     let item:T;
 
@@ -149,26 +146,22 @@ export class Heap<T> {
       return null;
     }
 
-    // copy last element to first index
+    // Copy last element to first index
     this.heap[0] = this.heap[this.length - 1];
 
-    // remove the (now duplicate) last element
+    // Remove the (now duplicate) last element
     this.heap = this.heap.slice(0, this.length - 1);
 
-    // push down root to reinstate heap invariants
+    // Push down root to reinstate heap invariants
     this.pushDown(0);
 
-    // return our min/max item
+    // Return our min/max item
     return item;
   }
 
-  peek(): T | null {
-    // does not affect the heap
-    if( this.heap[0] ) {
-      return this.heap[0];
-    } else {
-      return null;
-    }
+  peek(): T | undefined {
+    // Non destructive - doesn't remove [0]
+    return this.heap[0];
   }
 
   search(item:T): number | boolean {

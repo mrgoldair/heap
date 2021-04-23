@@ -22,7 +22,7 @@ export class Heap {
         return result;
     }
     highestPriorityChildIndex(root) {
-        // calculate where the children nodes start
+        // First child index
         let currentIndex = (root * this.branchFactor) + 1;
         let current = this.heap[currentIndex];
         if (current == null)
@@ -40,37 +40,34 @@ export class Heap {
         }
         return currentIndex;
     }
-    // this is tree (not heap) specific so could perhaps be imported from such a module
+    // This is tree (not heap) specific so could perhaps be imported from such a module
     firstLeafIndex() {
         return Math.round(this.heap.length / this.branchFactor);
     }
-    // same here...
     parentIndex(index) {
         // 0 is the root of the tree and by definition, has no parent
         if (index == 0)
             return null;
         return Math.round(Math.floor((index - 1) / this.branchFactor));
     }
-    pushDown(index) {
+    pushDown(index = 0) {
         // Only makes sense when there's multiple items to compare
         if (this.heap.length < 2)
             return;
         let currentIndex = index;
         let node = this.heap[index];
         let firstLeafIndex = this.firstLeafIndex();
+        // By definition we'll should always be traversing nodes that have some children
         while (currentIndex < firstLeafIndex) {
-            // by definition of our while-loop, we'll should 
-            // always be traversing nodes that have children
             let highestPriorityChildIndex = this.highestPriorityChildIndex(currentIndex);
             let highestPriorityChild = this.heap[highestPriorityChildIndex];
-            // if our node is of lesser priority (higher ordinal value in a min heap), then swap it
-            if (!this.isHigherPriority(node, highestPriorityChild)) {
+            // If the child is higher priority, swap them
+            if (this.isHigherPriority(highestPriorityChild, node)) {
                 this.heap[currentIndex] = highestPriorityChild;
                 currentIndex = highestPriorityChildIndex;
             }
             else {
-                // our node is of higher priority (lower ordinal value); heap invariants are satisfied
-                return;
+                break;
             }
         }
         // we can't traverse the tree anymore, so place our node at `currentIndex` 
@@ -111,23 +108,18 @@ export class Heap {
         else {
             return null;
         }
-        // copy last element to first index
+        // Copy last element to first index
         this.heap[0] = this.heap[this.length - 1];
-        // remove the (now duplicate) last element
+        // Remove the (now duplicate) last element
         this.heap = this.heap.slice(0, this.length - 1);
-        // push down root to reinstate heap invariants
+        // Push down root to reinstate heap invariants
         this.pushDown(0);
-        // return our min/max item
+        // Return our min/max item
         return item;
     }
     peek() {
-        // does not affect the heap
-        if (this.heap[0]) {
-            return this.heap[0];
-        }
-        else {
-            return null;
-        }
+        // Non destructive - doesn't remove [0]
+        return this.heap[0];
     }
     search(item) {
         for (let index = 0; index < this.heap.length; index++) {
