@@ -126,13 +126,13 @@ export class Heap {
             if (item == this.heap[index])
                 return index;
         }
-        return false;
+        return -1;
     }
     insert(item) {
         if (item.toString().trim().length == 0)
             throw new Error("item cannot be empty");
         // Disallow duplicates
-        if (this.search(item))
+        if (this.search(item) != -1)
             return false;
         // node goes to the end of the heap
         this.heap.push(item);
