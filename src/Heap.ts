@@ -194,28 +194,22 @@ export class Heap<T> {
 
   remove(item:T): void {
 
-    let index:number | boolean = this.search(item);
+    let index:number = this.search(item);
 
-    // if it's not found, return
-    if(!index)
+    // Not found so just return
+    if( index == -1 )
       return;
 
-    if( typeof index == "number" ) {
-
-      // if our item also happens to be the last in the heap
-      if( index == (this.heap.length - 1) ) {
-        // pop and discard;
-        this.heap.pop();
-        return;
-      }
-
-      // .. otherwise move the tail of heap to `found` index
-      // `pop()` also shrinks the underlying array so we don't
-      // need to slice
-      this.heap[index] = this.heap.pop();
-
-      // reinstate heap invariants
-      this.pushDown(index);
+    // Our item also happens to be the last in the heap
+    if( index == (this.heap.length - 1) ) {
+      this.heap.pop();
+      return;
     }
+
+    // Simply overwrite the item at the index being removed
+    this.heap[index] = this.heap.pop();
+
+    // reinstate heap invariants
+    this.pushDown(index);
   }
 }
