@@ -14,16 +14,11 @@ type Point = {
   y:number
 }
 
-type Segment = {
-  start:Point
-  end:Point
-}
-
-function compareSegments(a:Segment,b:Segment) {
-  let r:number = a.start.y - b.start.y
+function comparePoints( a:Point,b:Point ) {
+  let r:number = a.y - b.y;
     
   if ( r == 0 ){
-    return a.start.x - b.start.x;
+    return a.x - b.x;
   } else {
     return r;
   }
@@ -54,11 +49,8 @@ test('Heap (number) returns items in priority order', () => {
 
 test('Heap (segment) returns items in priority order', () => {
   fc.assert(
-    fc.property(fc.array(fc.record({
-      start: fc.record({ x:fc.nat(),y:fc.nat() }),
-      end: fc.record({ x:fc.nat(),y:fc.nat() })
-    })), inputs => {
-      let queue:Heap<Segment> = new Heap(compareSegments);
+    fc.property(fc.array(fc.record({ x:fc.nat(),y:fc.nat() })), inputs => {
+      let queue:Heap<Point> = new Heap(comparePoints);
 
       for (let index = 0; index < inputs.length; index++) {
         queue.insert( inputs[index] );
@@ -72,7 +64,7 @@ test('Heap (segment) returns items in priority order', () => {
       for (let index = 0; index < results.length - 1; index++) {
         let a = results[index];
         let b = results[index + 1];
-        expect(a.start.y).toBeLessThanOrEqual(b.start.y);
+        expect(a.y).toBeLessThanOrEqual(b.y);
       }
     })
   );
