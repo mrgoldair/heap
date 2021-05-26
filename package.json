@@ -1,7 +1,9 @@
 {
   "name": "@mrgoldair/heap",
-  "version": "0.3.8",
-  "main": "dist/Heap.js",
+  "version": "0.3.9",
+  "description": "An implementation of a heap data structure",
+  "homepage": "https://github.com/mrgoldair/heap#readme",
+  "main": "src/Heap.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -25,12 +27,6 @@
     "testMatch": [
       "**/specs/*.+(ts|tsx|js)"
     ]
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "ts-node": "^8.10.2"
   },
   "devDependencies": {
     "@types/jest": "26.0.4",
