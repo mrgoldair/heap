@@ -1,9 +1,10 @@
 {
   "name": "@mrgoldair/heap",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "An implementation of a heap data structure",
   "homepage": "https://github.com/mrgoldair/heap#readme",
-  "main": "src/Heap.ts",
+  "main": "lib/Heap.js",
+  "types": "lib/Heap.d.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
