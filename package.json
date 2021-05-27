@@ -1,6 +1,6 @@
 {
   "name": "@mrgoldair/heap",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "An implementation of a heap data structure",
   "homepage": "https://github.com/mrgoldair/heap#readme",
   "main": "src/Heap.ts",

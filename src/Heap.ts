@@ -1,5 +1,5 @@
 
-export class Heap<T> {
+export default class Heap<T> {
 
   heap: Array<T>;
   branchFactor: number;
