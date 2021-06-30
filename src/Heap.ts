@@ -1,5 +1,5 @@
 
-export default class Heap<T> {
+export class Heap<T> {
 
   heap: Array<T>;
   branchFactor: number;
@@ -19,9 +19,8 @@ export default class Heap<T> {
   isHigherPriority(a:T,b:T): boolean {
 
     // If the heap is just numbers we can determine priority easily
-    if (typeof a == "number" && typeof b == "number"){
+    if (typeof a == "number" && typeof b == "number")
       return a < b;
-    }
 
     // Otherwise we have to use the comparator fn to determine priority
     if (this.compare == null)
@@ -167,11 +166,15 @@ export default class Heap<T> {
   search(item:T): number {
 
     for (let index = 0; index < this.heap.length; index++) {
-      if( item == this.heap[index] )
+      if( this.compare(item,this.heap[index]) == 0 )
         return index;
     }
 
     return -1;
+  }
+
+  contains(item:T): boolean {
+    return this.search(item) != -1;
   }
 
   insert(item:T): void {

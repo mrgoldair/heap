@@ -1,4 +1,4 @@
-export default class Heap<T> {
+export declare class Heap<T> {
     heap: Array<T>;
     branchFactor: number;
     compare: (a: T, b: T) => number;
@@ -13,6 +13,7 @@ export default class Heap<T> {
     top(): T | null;
     peek(): T | undefined;
     search(item: T): number;
+    contains(item: T): boolean;
     insert(item: T): void;
     remove(item: T): void;
 }
