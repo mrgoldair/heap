@@ -1,4 +1,4 @@
-export declare class Heap<T> {
+export default class Heap<T> {
     heap: Array<T>;
     branchFactor: number;
     compare: (a: T, b: T) => number;
